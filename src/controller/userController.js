@@ -36,16 +36,19 @@ const registerUser = async function(req,res){
     let profileImage= req.profileImage
 
 
+let hashing = bcrypt.hashSync(data.password,10)
+data.password=hashing
 
     if(profileImage && profileImage.length>0){
         let uploadedFileURL= await uploadFile( profileImage[0] )
-        body.bookCover = uploadedFileURL
+        data.profileImage = uploadedFileURL
   
     }
     else{
        return res.status(400).send({ msg: "Please enter profile image in body" })
     }
+    
 
     let createUser = await userModel.create(data)
-
+    return res.status(201).send({status:true,message:"User created successfully",data:data})
 }
