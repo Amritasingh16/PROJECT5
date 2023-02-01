@@ -1,8 +1,3 @@
-const express = require('express')
-const router = express.Router()
-const jwt = require("jsonwebtoken")
-
-
 router.post("/create",async function(req,res){
     let data = req.body
     let save = await usenModel.create(data)
@@ -25,16 +20,3 @@ router.post("/login", async function(req,res){
         return res.status(200).send({status : true, message : "User login successful",data : {userId : exist._id, token : token}})
     }
 })
-
-
-
-
-
-
-
-
-
-
-
-
-module.exports = router
