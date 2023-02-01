@@ -1,5 +1,5 @@
 const express = require('express')
-const route = require('./routes/route')
+const route = require('./route/route')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const multer= require("multer")
