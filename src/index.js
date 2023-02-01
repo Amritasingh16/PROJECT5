@@ -1,13 +1,14 @@
 const express = require('express')
-const route = require('./routes/route')
+const route = require('./route/route')
 const mongoose = require('mongoose')
-var cors = require('cors')
-const multer= require("")
+const cors = require('cors')
+const multer= require("multer")
 
 
 const app = express()
 app.use(express.json())
 app.use(cors())
+app.use(multer().any())
 
 mongoose.set('strictQuery', false)
 mongoose.connect("mongodb+srv://Bhavi:Bhavi123@cluster1.yydegcy.mongodb.net/group11Database", {
