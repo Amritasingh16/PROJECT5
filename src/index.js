@@ -10,7 +10,7 @@ app.use(express.json())
 app.use(cors())
 
 mongoose.set('strictQuery', false)
-mongoose.connect("", {
+mongoose.connect("mongodb+srv://Bhavi:Bhavi123@cluster1.yydegcy.mongodb.net/group1Database", {
     useNewUrlParser: true
 })
     .then(() => console.log("MongoDB is connected"))
