@@ -1,4 +1,6 @@
 const userModel = require("../model/userModel")
+const aws = require("aws-sdk")
+var bcrypt = require('bcryptjs');
 
 aws.config.update({
   
@@ -33,14 +35,14 @@ aws.config.update({
   
 const registerUser = async function(req,res){
     let data = req.body
-    let profileImage= req.profileImage
+    let files= req.files
 
 
 let hashing = bcrypt.hashSync(data.password,10)
 data.password=hashing
 
-    if(profileImage && profileImage.length>0){
-        let uploadedFileURL= await uploadFile( profileImage[0] )
+    if(files && files.length>0){
+        let uploadedFileURL= await uploadFile(files[0] )
         data.profileImage = uploadedFileURL
   
     }
@@ -50,5 +52,7 @@ data.password=hashing
     
 
     let createUser = await userModel.create(data)
-    return res.status(201).send({status:true,message:"User created successfully",data:data})
+    return res.status(201).send({status:true,message:"User created successfully",data:createUser})
 }
+
+module.exports={registerUser}
