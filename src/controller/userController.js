@@ -7,10 +7,11 @@ const { isValidName,isValidEmail,isValidNo,isValidPassword,isValidPin,isValid } 
 
   
 const registerUser = async function(req,res){
+    try{
     let body = req.body
     let files= req.files
     if(body.address){
-        if(typeof body.address != "object") return res.status(400).send({ status: false, message: "Address must be in object form." });
+       // if(typeof body.address != "object") return res.status(400).send({ status: false, message: "The Address must be in object form." });
 
     body.address = JSON.parse(body.address)
     }
@@ -90,12 +91,17 @@ body.password=hashing
   
     }
     else{
-       return res.status(400).send({ msg: "Please enter profile image in body" })
+       return res.status(400).send({ message: "Please enter profile image in body" })
     }
     
 
     let createUser = await userModel.create(body)
     return res.status(201).send({status:true,message:"User created successfully",data:createUser})
+
+}
+catch(err){
+    return res.status(500).send({status:false,message:err.message})
+}
 }
 
 
@@ -118,8 +124,8 @@ let loginUser = async function(req,res){
     let decrypt = await bcrypt.compare(password,hashedToken)  // have boolean true or false 
 
     if(decrypt === true){
-        let token = jwt.sign({userId : check._id.toString()}, "dummykey",{expiresIn : "1h"})
-        return res.status(200).send({status : true, message : "User login successful",data : {userId : check._id, token : token}})
+        let token = jwt.sign({userId : check._id.toString()}, "dummykey",{expiresIn : "4h"})
+        return res.status(200).send({status : true, message : "User login successfull",data : {userId : check._id, token : token}})
     }else{
         return res.status(400).send( {status : false, message : "enter valid password"})
     }
@@ -215,7 +221,7 @@ const updateUser = async function (req, res) {
 
     let files = req.files
     if (files && files.length > 0) {
-        uploadedFileURL = await uploadFile(files[0])
+       let uploadedFileURL = await uploadFile(files[0])
         data.profileImage = uploadedFileURL
         result.profileImage = data.profileImage
 
@@ -232,7 +238,7 @@ let {address} = data
 if (address) {
     if (address.shipping) {
     if (address.shipping.street) {
-        if (!validator.isValid(address.shipping.street)) return res.status(400).send({ status: false, message: "Street  is not valid" })
+        if (!isValid(address.shipping.street)) return res.status(400).send({ status: false, message: "Street  is not valid" })
         result["address.shipping.street"] = address.shipping.street
     }
     }
@@ -241,7 +247,7 @@ if (address) {
 if (address) {
     if (address.shipping) {
     if (address.shipping.city) {
-        if (!validator.isValid(address.shipping.city)) return res.status(400).send({ status: false, message: "Street  is not valid" })
+        if (!isValid(address.shipping.city)) return res.status(400).send({ status: false, message: "City  is not valid" })
         result["address.shipping.city"] = address.shipping.city
     }
     }
@@ -250,7 +256,7 @@ if (address) {
 if (address) { 
     if (address.shipping) {
     if (address.shipping.pincode) {
-        if(typeof (address.shipping.pincode) != "number" || address.shipping.pincode.trim()=="")
+        if(typeof (address.shipping.pincode) != "number" )//|| address.shipping.pincode.trim()=="")
         return res.status(400).send({ status: false, message: "please Enter pincode in Number" })
         result["address.shipping.pincode"] = address.shipping.pincode
     }
@@ -262,16 +268,17 @@ if (address) {
 if (address) {
     if (address.billing) {
     if (address.billing.street) {
-        if (!validator.isValid(address.shipping.street)) return res.status(400).send({ status: false, message: "Street  is not valid" })    
+        if (!isValid(address.shipping.street)) return res.status(400).send({ status: false, message: "Street  is not valid" })    
         result["address.billing.street"] = address.billing.street 
-    }
-    }
+    } 
+    } 
 }
 
     if (address) {
         if (address.billing) {
         if (address.billing.city) {
-            if (!validator.isValid(address.shipping.city)) return res.status(400).send({ status: false, message: "city  is not valid" })
+            if (!isValid(address.shipping.city)) return res.status(400).send({ status: false, message: "city  is not valid" })
+
             result["address.billing.city"] = address.billing.city   
         }
         }
@@ -280,7 +287,7 @@ if (address) {
     if (address) {
         if (address.billing) {
         if (address.billing.pincode) {
-            if(typeof (address.billing.pincode) !="number"|| address.billing.pincode.trim()=="")
+            if(typeof (address.billing.pincode) !="number")//|| address.billing.pincode.trim()=="")
             return res.status(400).send({ status: false, message: "please Enter pincode in Number" })
             result["address.billing.pincode"] = address.billing.pincode    
         }
@@ -294,7 +301,7 @@ if (address) {
 
     let updateUser = await userModel.findOneAndUpdate({ _id: userId }, result, { new: true })
 
-    return res.status(200).send({ status: true,message:"data Updatated Successfully", data: updateUser })
+    return res.status(200).send({ status: true,message:"User profile updated", data: updateUser })
 
 
 
