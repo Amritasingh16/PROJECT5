@@ -38,10 +38,18 @@ aws.config.update({
 const registerUser = async function(req,res){
     let body = req.body
     let files= req.files
+    if(body.address){
+    body.address = JSON.parse(body.address)
+    }
     let {fname,lname,email,profileImage,phone,password,address} = body
 
 if (!body || Object.keys(body).length == 0)return res.status(400).send({ status: false, message: "Enter data in body." })
-
+// let a=["fname","lname","email","profileImage","phone","password","address"]
+// keys=Object.keys(body)
+// for(let i=0;i<a.length;i++){
+// if(!keys.includes(i))
+// return res.send({msg:"'${i}'is mandatory"})
+// }
 
 if(!fname) return res.status(400).send({status:false,message:"Please provide first name in body."})
 if(!isValidName(fname)) return res.status(400).send({status:false,message:"FirstName should have minimum only 3 letters."})
@@ -59,16 +67,51 @@ if (!isValidNo(phone))return res.status(400).send({status: false,message: "Pleas
 if (!password) return res.status(400).send({ status: false, message: "Please enter password in body." });
 if (!isValidPassword(password))return res.status(400).send({status: false,message:"Password must be in the Range of 8 to 15 , it must contain atleast 1 lowercase, 1 uppercase, 1 numeric character and one special character."});
 
-if(!address) return res.status(400).send({ status: false, message: "Please enter address in body." });
-//if(typeof address != "object") return res.status(400).send({ status: false, message: "Please enter address in object form." });
-if(!address.shipping) return res.status(400).send({ status: false, message: "Please enter shipping in body." });
-if(!address.shipping.street||!address.shipping.city||!address.shipping.pincode) return res.status(400).send({ status: false, message: "Please enter street in shipping." });
-//if(!address.shipping.city) return res.status(400).send({ status: false, message: "Please enter city in shipping." });
-//if(!address.shipping.pincode) return res.status(400).send({ status: false, message: "Please enter pincode in shipping." });
+if(!address) return res.status(400).send({ status: false, message: "Please enter address in body." })
+console.log(body.address)
+ //body.address = JSON.parse(body.address)
+ console.log(body.address)
+if(!body.address.shipping) return res.status(400).send({ status: false, message: "Please enter shipping in body." });
+
+if(!address.shipping.street) return res.status(400).send({ status: false, message: "Please enter street in shipping." });
+if(!address.shipping.city) return res.status(400).send({ status: false, message: "Please enter city in shipping." });
+if(!address.shipping.pincode) return res.status(400).send({ status: false, message: "Please enter pincode in shipping." });
+if(!address.billing) return res.status(400).send({ status: false, message: "Please enter billing." });
+if(!address.billing.street) return res.status(400).send({ status: false, message: "Please enter street in billing." });
+if(!address.billing.city) return res.status(400).send({ status: false, message: "Please enter city in billing." });
+if(!address.billing.pincode) return res.status(400).send({ status: false, message: "Please enter pincode in billing." });
+
+
+//  if(!address) return res.status(400).send({ status: false, message: "Please enter address in body." });
+
+// if(!address.shipping.street){
+//     return res.send("yaha aa gaya main")
+// }
+// if(!address.shipping.city){
+//     return res.send("city mein aa gaya main")
+// }
+// if(!address.shipping.pincode){
+//     return res.send("pincode aa gaya main")
+// }
+// if(!address.billing.street){
+//     return res.send("billing street mein aa gaya main")
+// }
+// if(!address.billing.city){
+//     return res.send("city street mein aa gaya main")
+// }
+// if(!address.billing.pincode){
+//     return res.send("pincode street mein aa gaya main")
+// }
+
+// //if(typeof address != "object") return res.status(400).send({ status: false, message: "Please enter address in object form." });
+// // if(!address.shipping) return res.status(400).send({ status: false, message: "Please enter shipping in body." });
+// // if(!address.shipping.street||!address.shipping.city||!address.shipping.pincode) return res.status(400).send({ status: false, message: "Please enter street in shipping." });
+// //if(!address.shipping.city) return res.status(400).send({ status: false, message: "Please enter city in shipping." });
+// //if(!address.shipping.pincode) return res.status(400).send({ status: false, message: "Please enter pincode in shipping." });
 
 
 
-    body.address = JSON.parse(body.address)
+//     // body.address = JSON.parse(body.address)
 
 
 
@@ -101,6 +144,8 @@ let loginUser = async function(req,res){
 
     if(!email) return res.status(400).send({status:false, message: "email is required"}) 
     let check = await userModel.findOne({email : email})  // for getting the hashed password from db
+    if(!check) return res.status(400).send({status : false, message: "email is not found"})
+
     let hashedToken = check.password        // assign hashed token into hashedToken
 
     if(!password) return res.status(400).send({status:false, message: "password is required"})
