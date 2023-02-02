@@ -1,8 +1,19 @@
 
 const isValidName = function (name) {
-    const nameRegex = /^[a-zA-Z]{3,50}$/;
+    const nameRegex = /^[a-zA-Z ]{1,30}$/;
     return nameRegex.test(name)
 }
+
+
+const isValid = (value) => {
+  if (typeof value === "undefined" || value === null || value === "") {
+        return false
+  }
+  if (typeof value === "string" && value.trim().length > 0) {
+        return true
+    }
+};
+
 
 const isValidEmail = function (email) {
     const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -32,4 +43,4 @@ const isValidPin = function (pincode) {
 
   
 
-module.exports={isValidName,isValidEmail,isValidNo,isValidPassword,isValidPin} 
+module.exports={isValidName,isValidEmail,isValidNo,isValidPassword,isValidPin,isValid} 

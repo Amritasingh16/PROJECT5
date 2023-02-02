@@ -24,4 +24,5 @@ const createProduct = async function (req, res) {
     }
 }
 
+
 module.exports = { createProduct }

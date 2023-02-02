@@ -3,8 +3,7 @@ const mongoose = require("mongoose")
 const {uploadFile} = require("../middlewares/aws")
 var bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
-const { isValidName,isValidEmail,isValidNo,isValidPassword,isValidPin } = require("../validations/validation");
-
+const { isValidName,isValidEmail,isValidNo,isValidPassword,isValidPin,isValid } = require("../validations/validation");
 
   
 const registerUser = async function(req,res){
@@ -26,10 +25,11 @@ if (!body || Object.keys(body).length == 0)return res.status(400).send({ status:
 // }
 
 if(!fname) return res.status(400).send({status:false,message:"Please provide first name in body."})
-
+if (!isValid(fname)) return res.status(400).send({ status: false, message: "first name is not valid" })
 if(!isValidName(fname)) return res.status(400).send({status:false,message:"FirstName should have only letters and minumum 3 letters."})
 
 if(!lname) return res.status(400).send({status:false,message:"Please provide last name in body."})
+if (!isValid(lname)) return res.status(400).send({ status: false, message: "Please provide Last Name in string form and it cannot be empty." })
 if(!isValidName(lname)) return res.status(400).send({status:false,message:"LastName should have only letters and minumum 3 letters."})
 
 if (!email) return res.status(400).send({ status: false, message: "Please enter email in body." })
@@ -152,9 +152,157 @@ let loginUser = async function(req,res){
 }
 
 
+const updateUser = async function (req, res) {
+    let data = req.body
+    let userId = req.params.userId
+
+    
+ let {fname,lname,email,phone,password,profileImage} = data
+    let result = {}
+
+    if (!mongoose.isValidObjectId(userId)) {
+        return res.status(400).send({ status: false, message: "please Provide valid userId" })
+    }
+    if(userId!=req.bearerToken) return res.status(403).send({ status: false, message: "you are not authorized" })
+
+    let checkUser = await userModel.findOne({ _id: userId })
+    if (!checkUser) {
+        return res.status(400).send({ status: false, message: " User Does Not Exist" })
+    }
+
+
+    if (fname) {
+        if (!isValid(fname)) return res.status(400).send({ status: false, message: "first name is not valid" })
+        if(!isValidName(fname)) return res.status(400).send({status:false,message:"First Name should have only letters and minumum 3 letters."})
+        result.fname = fname
+    }
+
+    if (lname) {
+       if (!isValid(lname)) return res.status(400).send({ status: false, message: "Please provide Last Name in string form and it cannot be empty." })
+        if(!isValidName(lname)) return res.status(400).send({status:false,message:"Last Name should have only letters and minumum 3 letters."})
+        result.lname = lname
+    }
+
+
+
+    if (email) {
+        if (!isValid(email)) return res.status(400).send({ status: false, message: "Email is  is not valid" })
+        if (!isValidEmail(email)) return res.status(400).send({ status: false, message: "Please enter valid email." })
+
+        let emailPresent = await userModel.findOne({ email: email })
+        if (emailPresent) return res.status(400).send({ status: false, message: " email already exist please provide another email" })
+        result.email = email
+    }
+
+
+    if (password) {
+        if (!isValid(password)) return res.status(400).send({ status: false, message: "Please Provide Proper Password" })
+        // if(password.length<8 || password.length>15)  return res.status(400).send({ status: false, message: "Password's length must be between 8 & 15." });
+    if (!isValidPassword(password))return res.status(400).send({status: false,message:"Password must be in the Range of 8 to 15 , it must contain atleast 1 lowercase, 1 uppercase, 1 numeric character and one special character."});
+        let encryptPassword = await bcrypt.hash(password, 10)
+        result.password = encryptPassword
+
+    }
+
+    if (phone) {
+        //if (!isValid(phone)) return res.status(400).send({ status: false, message: "Please Provide Proper Password" })
+        if (!isValidNo(phone))return res.status(400).send({status: false,message: "Please enter a valid Mobile number.",});
+        let checkPhone = await userModel.findOne({ phone: phone })
+        if (checkPhone) return res.status(400).send({ status: false, message: " mobile number already exist please provide another phone number" })
+        result.phone = data.phone
+
+    }
+
+    let files = req.files
+    if (files && files.length > 0) {
+        uploadedFileURL = await uploadFile(files[0])
+        data.profileImage = uploadedFileURL
+        result.profileImage = data.profileImage
+
+    }
+
+if(data.address){
+    data.address = JSON.parse(data.address)
+}
+
+let {address} = data
+ 
+
+//shipping add
+if (address) {
+    if (address.shipping) {
+    if (address.shipping.street) {
+        if (!validator.isValid(address.shipping.street)) return res.status(400).send({ status: false, message: "Street  is not valid" })
+        result["address.shipping.street"] = address.shipping.street
+    }
+    }
+}
+
+if (address) {
+    if (address.shipping) {
+    if (address.shipping.city) {
+        if (!validator.isValid(address.shipping.city)) return res.status(400).send({ status: false, message: "Street  is not valid" })
+        result["address.shipping.city"] = address.shipping.city
+    }
+    }
+}
+
+if (address) { 
+    if (address.shipping) {
+    if (address.shipping.pincode) {
+        if(typeof (address.shipping.pincode) != "number" || address.shipping.pincode.trim()=="")
+        return res.status(400).send({ status: false, message: "please Enter pincode in Number" })
+        result["address.shipping.pincode"] = address.shipping.pincode
+    }
+    }
+}
+
+// for billing address
+
+if (address) {
+    if (address.billing) {
+    if (address.billing.street) {
+        if (!validator.isValid(address.shipping.street)) return res.status(400).send({ status: false, message: "Street  is not valid" })    
+        result["address.billing.street"] = address.billing.street 
+    }
+    }
+}
+
+    if (address) {
+        if (address.billing) {
+        if (address.billing.city) {
+            if (!validator.isValid(address.shipping.city)) return res.status(400).send({ status: false, message: "city  is not valid" })
+            result["address.billing.city"] = address.billing.city   
+        }
+        }
+    }
+ 
+    if (address) {
+        if (address.billing) {
+        if (address.billing.pincode) {
+            if(typeof (address.billing.pincode) !="number"|| address.billing.pincode.trim()=="")
+            return res.status(400).send({ status: false, message: "please Enter pincode in Number" })
+            result["address.billing.pincode"] = address.billing.pincode    
+        }
+        }
+    }
+
+
+    if (Object.keys(result).length == 0) {
+        return res.status(400).send({ status: false, message: "Please Provide some data for updation" })
+    }
+
+    let updateUser = await userModel.findOneAndUpdate({ _id: userId }, result, { new: true })
+
+    return res.status(200).send({ status: true,message:"data Updatated Successfully", data: updateUser })
+
+
+
+}
 
 
 
 
 
-module.exports={registerUser,loginUser,getUserByParams}
+
+module.exports={registerUser,loginUser,getUserByParams,updateUser}
