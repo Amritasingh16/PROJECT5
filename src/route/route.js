@@ -8,4 +8,6 @@ router.post("/register",registerUser)
 router.post("/login",loginUser)
 router.get("/user/:userId/profile",authentication,getUserByParams)
 
+
+
 module.exports = router
