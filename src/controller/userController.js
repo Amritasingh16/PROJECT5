@@ -1,9 +1,9 @@
 const userModel = require("../model/userModel")
 const mongoose = require("mongoose")
-const {uploadFile} = require("../aws/aws")
+const {uploadFile} = require("../middlewares/aws")
 var bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
-const { isValidName,isValidEmail,isValidNo,isValidPassword } = require("../validations/validation");
+const { isValidName,isValidEmail,isValidNo,isValidPassword,isValidPin } = require("../validations/validation");
 
 
   
@@ -11,6 +11,8 @@ const registerUser = async function(req,res){
     let body = req.body
     let files= req.files
     if(body.address){
+        if(typeof body.address != "object") return res.status(400).send({ status: false, message: "Address must be in object form." });
+
     body.address = JSON.parse(body.address)
     }
     let {fname,lname,email,profileImage,phone,password,address} = body
@@ -24,10 +26,11 @@ if (!body || Object.keys(body).length == 0)return res.status(400).send({ status:
 // }
 
 if(!fname) return res.status(400).send({status:false,message:"Please provide first name in body."})
-if(!isValidName(fname)) return res.status(400).send({status:false,message:"FirstName should have minimum only 3 letters."})
+
+if(!isValidName(fname)) return res.status(400).send({status:false,message:"FirstName should have only letters and minumum 3 letters."})
 
 if(!lname) return res.status(400).send({status:false,message:"Please provide last name in body."})
-if(!isValidName(lname)) return res.status(400).send({status:false,message:"Last name should have letters only."})
+if(!isValidName(lname)) return res.status(400).send({status:false,message:"LastName should have only letters and minumum 3 letters."})
 
 if (!email) return res.status(400).send({ status: false, message: "Please enter email in body." })
 if (!isValidEmail(email)) return res.status(400).send({ status: false, message: "Please enter valid email." })
@@ -40,6 +43,7 @@ let phonePresent = await userModel.findOne({phone:phone})
 if(phonePresent) return res.status(400).send({ status: false, message: "This phone number already exists." })
 
 if (!password) return res.status(400).send({ status: false, message: "Please enter password in body." });
+// if(password.length<8 || password.length>15)  return res.status(400).send({ status: false, message: "Password's length must be between 8 & 15." });
 if (!isValidPassword(password))return res.status(400).send({status: false,message:"Password must be in the Range of 8 to 15 , it must contain atleast 1 lowercase, 1 uppercase, 1 numeric character and one special character."});
 
 if(!address) return res.status(400).send({ status: false, message: "Please enter address in body." })
@@ -50,23 +54,28 @@ if(!shipping) return res.status(400).send({ status: false, message: "Please ente
 if(typeof shipping != "object") return res.status(400).send({ status: false, message: "Shipping must be in object form." });
 
 if(!shipping.street) return res.status(400).send({ status: false, message: "Please enter street in shipping." });
-if(typeof shipping.street != "string") return res.status(400).send({ status: false, message: "street must be in object form." });
+if(typeof shipping.street != "string") return res.status(400).send({ status: false, message: "street must be in string form." });
 
 if(!shipping.city) return res.status(400).send({ status: false, message: "Please enter city in shipping." });
 if(typeof shipping.city != "string") return res.status(400).send({ status: false, message: "City must be in string form." });
+
 if(!shipping.pincode) return res.status(400).send({ status: false, message: "Please enter pincode in shipping." });
-if(typeof shipping.pincode != "string") return res.status(400).send({ status: false, message: "Pincode must be in string form." });
+if(typeof shipping.pincode != "number") return res.status(400).send({ status: false, message: "Pincode must be in string form." });
+if (!isValidPin(shipping.pincode))return res.status(400).send({ status: false, message: "Shipping Pincode must be in number form." });
 
 
 if(!billing) return res.status(400).send({ status: false, message: "Please enter billing." });
 if(typeof billing != "object") return res.status(400).send({ status: false, message: "billing must be in object form." });
 
 if(!billing.street) return res.status(400).send({ status: false, message: "Please enter street in billing." });
-if(typeof billing.street != "string") return res.status(400).send({ status: false, message: "street must be in object form." });
+if(typeof billing.street != "string") return res.status(400).send({ status: false, message: "street must be in string form." });
+
 if(!billing.city) return res.status(400).send({ status: false, message: "Please enter city in billing." });
 if(typeof billing.city != "string") return res.status(400).send({ status: false, message: "City must be in string form." });
+
 if(!billing.pincode) return res.status(400).send({ status: false, message: "Please enter pincode in billing." });
-if(typeof billing.pincode != "string") return res.status(400).send({ status: false, message: "Pincode must be in string form." });
+if(typeof billing.pincode != "number") return res.status(400).send({ status: false, message: "Billing Pincode must be in number form." });
+if (!isValidPin(billing.pincode))return res.status(400).send({ status: false, message: "Please enter valid pincode." });
 
 
 
@@ -100,7 +109,7 @@ let loginUser = async function(req,res){
 
     if(!email) return res.status(400).send({status:false, message: "email is required"}) 
     let check = await userModel.findOne({email : email})  // for getting the hashed password from db
-    if(!check) return res.status(400).send({status : false, message: "email is not found"})
+    if(!check) return res.status(404).send({status : false, message: "email is not found"})
 
     let hashedToken = check.password        // assign hashed token into hashedToken
 
@@ -125,6 +134,7 @@ let loginUser = async function(req,res){
     const getUserByParams = async function(req,res){
     try {
         let userId=req.params.userId
+        if(!userId) return res.status(400).send({ status: false, message: "userId is required in params" })
         if (!mongoose.isValidObjectId(userId)) return res.status(400).send({ status: false, message: "userId is invalid" })
         let verifyToken= req.bearerToken;
        
