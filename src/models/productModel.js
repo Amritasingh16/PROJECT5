@@ -16,36 +16,44 @@ const productSchema = new mongoose.Schema({
     },
     price: {
         type: Number,
-        required: true
+        required: true,
+        trim: true
     },
     currencyId: {
         type: String,
         required: true,
-        enum:["INR"]
+        enum:["INR"],
+        trim: true
     },
     currencyFormat: {
         type: String,
         required: true,
-        enum:["₹"]
+        enum:["₹"],
+        trim: true
     },
     isFreeShipping: {
         type: Boolean,
-        default: false
+        default: false,
+        trim: true
     },
     productImage: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },  // s3 link
     style: {
-        type: String
+        type: String,
+        trim: true
     },
     availableSizes: {
         type: [String],
-       enum: ["S", "XS", "M", "X", "L", "XXL", "XL"],
-        required: true
+        enum: ["S", "XS", "M", "X", "L", "XXL", "XL"],
+        required: true,
+        trim: true
     },
     installments: {
-        type: Number
+        type: Number,
+        trim: true
     },
     deletedAt: {
         type: Date 

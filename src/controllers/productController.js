@@ -1,7 +1,7 @@
 const productModel = require("../models/productModel")
 const { uploadFile } = require("../middlewares/aws")
 const { isValidTitle, isValidPrice } = require("../validations/validation")
-const mongoose= require("mongoose")
+
 
 //----------------------
 
@@ -16,8 +16,9 @@ const createProduct = async function (req, res) {
         let files = req.files
 
 
+
         let { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments } = data
-        
+
         if (!title) return res.status(400).send({ status: false, message: "Title is mandatory" })
         if (!description) return res.status(400).send({ status: false, message: "Description is mandatory" })
         if (!price) return res.status(400).send({ status: false, message: "Price is mandatory" })
@@ -28,15 +29,25 @@ const createProduct = async function (req, res) {
 
         //===============================Validations=====================//
 
+        
+
         if (!isValidTitle(title)) return res.status(400).send({ status: false, message: "Title should not contain Numeric and special characters" })
+        data.title = title
         if (!isValidTitle(description)) return res.status(400).send({ status: false, message: "Description should not contain Numeric and special characters" })
+        data.description=description
         if (!isValidPrice(price)) return res.status(400).send({ status: false, message: "Invalid Price" })
+        data.price = Number(price).toFixed(2)
         if (currencyId != 'INR') return res.status(400).send({ status: false, message: "CurrencyId must be INR" })
+        data.currencyId=currencyId
         if (currencyFormat != '₹') return res.status(400).send({ status: false, message: "Currency Format must be ₹" })
-        if(isFreeShipping){
-        if (isFreeShipping !== "true") return res.status(400).send({ status: false, message: "IsfreeShipping must be True and False" })
+        data.currencyFormat=currencyFormat
+        if (isFreeShipping) {
+            if (isFreeShipping !== "true") return res.status(400).send({ status: false, message: "IsfreeShipping must be True and False" })
         }
+        data.isFreeShipping=isFreeShipping
         if (installments == '' || style == '') return res.status(400).send({ status: false, message: "Enter some data in Installments and Style" })
+        data.style=style
+        data.installments=installments
 
         let uniqueTitle = await productModel.findOne({ title: title })
         if (uniqueTitle) return res.status(400).send({ status: false, message: "Title already present" })
@@ -150,15 +161,15 @@ const updateProductsByParams = async function (req, res) {
 
 
 const deleteProductsByParams = async function (req, res) {
-   try{
-    let productId = req.params.productId
-    if(!mongoose.isValidObjectId(productId)) return res.status(400).send({status:false, message: "Please provide valid productId"})
-    let deleteProduct= await productModel.findOneAndUpdate({_id:productId,isDeleted:false},{isDeleted:true},{new:true})
-    if(!deleteProduct) return res.status(400).send({status:false, message: "Product already deleted"})
-    return res.status(200).send({status: true, message: "Success", data: "Document Deleted!"})
-   }catch(err){
-    return res.status(500).send({status: false, message: err.message})
-   }
+    try {
+        let productId = req.params.productId
+        if (!mongoose.isValidObjectId(productId)) return res.status(400).send({ status: false, message: "Please provide valid productId" })
+        let deleteProduct = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, { isDeleted: true }, { new: true })
+        if (!deleteProduct) return res.status(400).send({ status: false, message: "Product already deleted" })
+        return res.status(200).send({ status: true, message: "Success", data: "Document Deleted!" })
+    } catch (err) {
+        return res.status(500).send({ status: false, message: err.message })
+    }
 
 }
 
