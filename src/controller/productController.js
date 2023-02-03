@@ -129,6 +129,23 @@ const getProductsByParams = async function(req,res){
 
 
 const updateProductsByParams = async function(req,res){
+    kjsdfgkljsdfkl;jg;lksdfjg;lkj
+
+
+
+
+
+
+
+sadfasd
+
+
+
+
+
+asdfasdf
+
+asdfasd
 
 }
 
