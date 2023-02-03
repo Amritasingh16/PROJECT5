@@ -1,4 +1,4 @@
-const productModel = require("../model/productModel")
+const productModel = require("../models/productModel")
 const {uploadFile} = require("../middlewares/aws")
 const {isValidTitle,isValidPrice} = require("../validations/validation")
 //----------------------
@@ -129,23 +129,7 @@ const getProductsByParams = async function(req,res){
 
 
 const updateProductsByParams = async function(req,res){
-    kjsdfgkljsdfkl;jg;lksdfjg;lkj
 
-
-
-
-
-
-
-sadfasd
-
-
-
-
-
-asdfasdf
-
-asdfasd
 
 }
 
@@ -156,4 +140,4 @@ const deleteProductsByParams = async function(req,res){
 }
 
 
-module.exports = { createProduct,getProductsByQuery ,getProductsById,deleteProductsByParams}
+module.exports = { createProduct,getProductsByQuery ,getProductsByParams,updateProductsByParams,deleteProductsByParams}

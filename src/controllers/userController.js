@@ -1,4 +1,4 @@
-const userModel = require("../model/userModel")
+const userModel = require("../models/userModel")
 const mongoose = require("mongoose")
 const {uploadFile} = require("../middlewares/aws")
 var bcrypt = require('bcryptjs');
