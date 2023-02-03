@@ -136,13 +136,14 @@ const updateProductsByParams = async function(req,res){
             obj.description = description
         }
         if(price){
-            
-            // console.log(typeof price)
-            // if(price != "number") return res.status(400).send({status : false, message : "price should be in number"})
-            obj.price = price
-            console.log(typeof price)
+           if(!isValidPrice(price)) return res.status(400).send({status: false, message : "invalid price"})
+
+           obj.price = Number(price).toFixed(2)
         }
         if(isFreeShipping){
+            if(isFreeShipping){
+                if (isFreeShipping !== "true") return res.status(400).send({ status: false, message: "IsfreeShipping must be True and False" })
+             }
             obj.isFreeShipping = isFreeShipping
         }
         if(installments){
