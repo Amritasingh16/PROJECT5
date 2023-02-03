@@ -9,16 +9,12 @@ const authentication = async function(req,res,next){
                 return res.status(401).send({status:false,message:err.message})
             }else{
                 req.bearerToken = decode.userId
-    
-    
-                next()
+                   next()
             }
         
         })
     
-        }
-    
-    
+        }  
 catch(err){
     return res.status(500).send({status:false,message:err.message})
 }
