@@ -1,13 +1,8 @@
 const productModel = require("../models/productModel")
-const { uploadFile } = require("../middlewares/aws")
-const { isValidTitle, isValidPrice } = require("../validations/validation")
-
-
+const {uploadFile} = require("../middlewares/aws")
+const {isValidTitle,isValidPrice} = require("../validations/validation")
+const mongoose = require("mongoose")
 //----------------------
-
-
-
-
 
 
 const createProduct = async function (req, res) {
@@ -80,18 +75,6 @@ const createProduct = async function (req, res) {
 //------------------------
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 const getProductsByQuery = async function (req, res) {
     let query = req.query
     if (Object.keys(query).length == 0) {
@@ -122,19 +105,7 @@ const getProductsByQuery = async function (req, res) {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+//-------------------------------------------------<>---------------------------------------------------------//
 
 const getProductsByParams = async function (req, res) {
 
@@ -150,15 +121,77 @@ const getProductsByParams = async function (req, res) {
     }
 }
 
+//--------------------------------------------------<>---------------------------------------------------------//
 
+const updateProductsByParams = async function(req,res){
+    try{
+        let body  = req.body
+        let productId = req.params.productId
+        let obj  = {}
+        let {title,description,price,isFreeShipping,productImage,installments,style,availableSizes} = body
+     
+        if(!mongoose.isValidObjectId(productId)) return res.status(400).send({status : false, message : "productId is invalid"})
 
+        let checkproduct = await productModel.findOne({_id : productId, isDeleted : false})
 
-const updateProductsByParams = async function (req, res) {
+        if(!checkproduct) return res.status(404).send({status : false, message : "product not found or either deleted"})
+        
+        if(title){
+            let unique = await productModel.findOne({title : title})
+            if(unique) return res.status(400).send({status: false, message : "title is already exists needs to be unique"})
+            if(!isValidTitle(title)) return res.status(400).send({status: false, message : "invalid title"})
+            obj.title = title  
+        }   
+        
+        if(description){
+            obj.description = description
+        }
+        if(price){
+           if(!isValidPrice(price)) return res.status(400).send({status: false, message : "invalid price"})
 
+           obj.price = Number(price).toFixed(2)
+        }
+        if(isFreeShipping){
+            if(isFreeShipping){
+                if (isFreeShipping !== "true") return res.status(400).send({ status: false, message: "IsfreeShipping must be True and False" })
+             }
+            obj.isFreeShipping = isFreeShipping
+        }
+        if(installments){
+            obj.installments = installments
+        }
+        if(style){
+            obj.style = style
+        }
+        if(availableSizes){
+           
+        obj.availableSizes = checkproduct.availableSizes
+        if(!["S", "XS", "M", "X", "L", "XXL", "XL"].includes(availableSizes))    return res.status(400).send({status : false, message : "only accepts S,XS,M,X,L,XXL,XL"})
+        if(obj.availableSizes.includes(availableSizes))     return res.status(400).send({status : false, message : "Size already exists"}) 
+        obj.availableSizes.push(availableSizes)
+        }        
+        
+        let files = req.files
+            if (files && files.length > 0) {
+               let uploadedFileURL = await uploadFile(files[0])
+                productImage = uploadedFileURL
+                obj.productImage = productImage
+        
+            }
+
+        if(Object.keys(obj).length === 0) return res.status(400).send({status : false, message : "please provide some data for updation"})
+        let  updateproduct = await productModel.findOneAndUpdate({_id : productId},obj,{new:true})
+        return res.status(200).send({status : true, message : "updated succesfully", data : updateproduct})
+
+        
+
+    }catch(err){
+        return res.status(500).send({status : false, error : err.message})
+    }
 
 }
 
-
+//---------------------------------------------<>-----------------------------------------------//
 
 const deleteProductsByParams = async function (req, res) {
     try {
