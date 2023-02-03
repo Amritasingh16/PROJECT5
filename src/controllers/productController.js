@@ -123,7 +123,17 @@ return res.status(200).send({status:true,message:"Success",data:findData})
 
 const getProductsByParams = async function(req,res){
 
-}
+        try {
+            let productId=req.params.productId
+            if (!mongoose.isValidObjectId(productId)) return res.status(400).send({ status: false, msg: "productId is invalid" })
+            let getproduct=await userModel.findOne({_id:productId,isDeleted:false})
+            if(!getproduct)return res.status(404).send({status:false,message:"Product not found"})
+            return res.status(200).send({status:true,data:getproduct})
+    
+        } catch (error) {
+            return res.status(500).send({status:false,message:error.message})
+        }
+    }
 
 
 
