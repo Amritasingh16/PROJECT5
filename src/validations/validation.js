@@ -41,6 +41,14 @@ const isValidPin = function (pincode) {
 
 
 
+  const isValidTitle = function(title){
+    const validTitle= /^[a-z A-Z_]{3,20}$/
+    return validTitle.test(title)
+  }
+  const isValidPrice =function(price) { 
+    const validPrice= /^(?:0|[1-9]\d*)(?:\.(?!.*000)\d+)?$/
+    return validPrice.test(price) }
+
   
 
-module.exports={isValidName,isValidEmail,isValidNo,isValidPassword,isValidPin,isValid} 
+module.exports={isValidName,isValidEmail,isValidNo,isValidPassword,isValidPin,isValid,isValidTitle,isValidPrice} 

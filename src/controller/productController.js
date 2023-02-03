@@ -1,10 +1,42 @@
 const productModel = require("../model/productModel")
 const {uploadFile} = require("../middlewares/aws")
+const {isValidTitle,isValidPrice} = require("../validations/validation")
+//----------------------
+
+
+
+
+
 
 const createProduct = async function (req, res) {
     try {
-        let data = req.body                                                               
+        let data = req.body
         let files = req.files
+
+
+        let { title, description, price, currencyId, currencyFormat, isFreeShipping, productImage,style,availableSizes,installments } = data
+
+        if (!title) return res.status(400).send({ status: false, message: "Title is mandatory" })
+        if (!description) return res.status(400).send({ status: false, message: "Description is mandatory" })
+        if (!price) return res.status(400).send({ status: false, message: "Price is mandatory" })
+        if (!currencyId) return res.status(400).send({ status: false, message: "CurrencyId is mandatory" })
+        if (!currencyFormat) return res.status(400).send({ status: false, message: "CurrencyFormat is mandatory" })
+        if (!productImage) return res.status(400).send({ status: false, message: "ProductImage is mandatory" })
+        if (!availableSizes) return res.status(400).send({ status: false, message: "AvailableSizes is mandatory" })
+
+        //===============================Validations=====================//
+
+        if(!isValidTitle(title)) return res.status(400).send({ status: false, message: "Title should not contain Numeric and special characters" })
+        if(!isValidTitle(description)) return res.status(400).send({ status: false, message: "Description should not contain Numeric and special characters" })
+        if(!isValidPrice(price)) return res.status(400).send({ status: false, message: "Invalid Price" })
+        if( currencyId != 'INR') return res.status(400).send({ status: false, message: "CurrencyId must be INR" })
+        if (currencyFormat != '₹') return res.status(400).send({ status: false, message: "Currency Format must be ₹" })
+        if(isFreeShipping !== "true" && isFreeShipping !=="false") return res.status(400).send({status: false, message: "IsfreeShipping must be True and False"})
+        if ( installments == ''|| style == '' ) return res.status(400).send({ status: false, message: "Enter some data in Installments and Style"})
+
+        let uniqueTitle= await productModel.findOne({title:title})
+        if(uniqueTitle) return res.status(400).send({ status: false, message: "Title already present"})
+
 
         if (files && files.length > 0) {
             if (files.length > 1) return res.status(400).send({ status: false, message: "You can't enter more than one file to Create" })
@@ -26,6 +58,23 @@ const createProduct = async function (req, res) {
         res.status(500).send({ status: false, message: err.message })
     }
 }
+
+
+
+
+//------------------------
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 const getProductsByQuery = async function(req,res){
@@ -59,4 +108,35 @@ return res.status(200).send({status:true,message:"Success",data:findData})
 } 
 
 
-module.exports = { createProduct,getProductsByQuery }
+
+
+
+
+
+
+
+
+
+
+
+
+
+const getProductsByParams = async function(req,res){
+
+}
+
+
+
+
+const updateProductsByParams = async function(req,res){
+
+}
+
+
+
+const deleteProductsByParams = async function(req,res){
+
+}
+
+
+module.exports = { createProduct,getProductsByQuery ,getProductsById,deleteProductsByParams}
