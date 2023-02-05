@@ -1,6 +1,6 @@
 const productModel = require("../models/productModel")
 const {uploadFile} = require("../middlewares/aws")
-const {isValidTitle,isValidPrice} = require("../validations/validation")
+const {isValidTitle,isValidDesc,isValidPrice} = require("../validations/validation")
 const mongoose = require("mongoose")
 //----------------------
 
@@ -9,36 +9,51 @@ const createProduct = async function (req, res) {
     try {
         let data = req.body
         let files = req.files
+ 
+        if(Object.keys(data).length==0) return res.status(400).send({ status: false, message: "Please provide some data in body" })
 
-
+       // INCORRECT FORMAT
 
         let { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments } = data
 
         if (!title) return res.status(400).send({ status: false, message: "Title is mandatory" })
-        if (!description) return res.status(400).send({ status: false, message: "Description is mandatory" })
-        if (!price) return res.status(400).send({ status: false, message: "Price is mandatory" })
-        if (!currencyId) return res.status(400).send({ status: false, message: "CurrencyId is mandatory" })
-        if (!currencyFormat) return res.status(400).send({ status: false, message: "CurrencyFormat is mandatory" })
-        //if (!files(productImage)) return res.status(400).send({ status: false, message: "ProductImage is mandatory" })
-        if (!availableSizes) return res.status(400).send({ status: false, message: "AvailableSizes is mandatory" })
-
-        //===============================Validations=====================//
-
-        
-
+          title = title.trim()
         if (!isValidTitle(title)) return res.status(400).send({ status: false, message: "Title should not contain Numeric and special characters" })
-        data.title = title
-        if (!isValidTitle(description)) return res.status(400).send({ status: false, message: "Description should not contain Numeric and special characters" })
-        data.description=description
+           data.title = title
+
+        if (!description) return res.status(400).send({ status: false, message: "Description is mandatory" })
+        description = description.trim()
+        if (!isValidDesc(description)) return res.status(400).send({ status: false, message: "Description should not contain Numeric and special characters" })
+        data.description = description
+
+        if (!price) return res.status(400).send({ status: false, message: "Price is mandatory" })
         if (!isValidPrice(price)) return res.status(400).send({ status: false, message: "Invalid Price" })
         data.price = Number(price).toFixed(2)
+
+        if (!currencyId) return res.status(400).send({ status: false, message: "CurrencyId is mandatory" })
+        currencyId = currencyId.trim()
         if (currencyId != 'INR') return res.status(400).send({ status: false, message: "CurrencyId must be INR" })
-        data.currencyId=currencyId
+        data.currencyId = currencyId
+
+        if (!currencyFormat) return res.status(400).send({ status: false, message: "CurrencyFormat is mandatory" })
+        currencyFormat = currencyFormat.trim()
         if (currencyFormat != '₹') return res.status(400).send({ status: false, message: "Currency Format must be ₹" })
         data.currencyFormat=currencyFormat
-        if (isFreeShipping) {
-            if (isFreeShipping !== "true") return res.status(400).send({ status: false, message: "IsfreeShipping must be True and False" })
+
+
+        if (!availableSizes) return res.status(400).send({ status: false, message: "AvailableSizes is mandatory" })
+        availableSizes = availableSizes.split(",")
+        for(let i=0;i<availableSizes.length;i++){
+        availableSizes[i] = availableSizes[i].trim()
+        if (!["S", "XS", "M", "X", "L", "XXL", "XL"].includes(availableSizes[i])) return res.status(400).send({ status: false, message: "only accepts S,XS,M,X,L,XXL,XL  seperated by commas." })
         }
+       data.availableSizes = availableSizes
+        
+    
+        if (isFreeShipping) {
+            if (isFreeShipping !== "true" && isFreeShipping !== "false") return res.status(400).send({ status: false, message: "IsfreeShipping must be True and False" })
+        }
+
         data.isFreeShipping=isFreeShipping
         if (installments == '' || style == '') return res.status(400).send({ status: false, message: "Enter some data in Installments and Style" })
         data.style=style
@@ -58,9 +73,6 @@ const createProduct = async function (req, res) {
             return res.status(400).send({ message: "Please enter product image in body" })
         }
 
-
-
-
         let create = await productModel.create(data)
         return res.status(201).send({ status: true, message: "Success", data: create })
 
@@ -68,9 +80,6 @@ const createProduct = async function (req, res) {
         res.status(500).send({ status: false, message: err.message })
     }
 }
-
-
-
 
 //------------------------
 
