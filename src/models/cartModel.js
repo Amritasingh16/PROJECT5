@@ -6,7 +6,8 @@ const cartSchema= new mongoose.Schema({
         type: ObjectId, 
         ref: "UserCollection",
         required: true,
-        unique:true
+        unique:true,
+        trim:true
     },
     items: [{
       productId: {
@@ -16,16 +17,19 @@ const cartSchema= new mongoose.Schema({
     },
       quantity: {
         type:Number,
-        required:true, //min 1
+        required:true,
+        trim:true //min 1
     }
     }],
     totalPrice: {
         type:Number,
         required:true, // comment: "Holds total price of all the items in the cart"
+        trim:true
     },
     totalItems: {
         type:Number,
         required:true, //comment: "Holds total number of items in the cart"
+        trim:true
     },
      
 
