@@ -96,7 +96,7 @@ body.password=hashing
     
 
     let createUser = await userModel.create(body)
-    return res.status(201).send({status:true,message:"User created successfully",data:createUser})
+    return res.status(201).send({status:true,message:"Success",data:createUser})
 
 }
 catch(err){
@@ -125,7 +125,7 @@ let loginUser = async function(req,res){
 
     if(decrypt === true){
         let token = jwt.sign({userId : check._id.toString()}, "dummykey",{expiresIn : "4h"})
-        return res.status(200).send({status : true, message : "User login successfull",data : {userId : check._id, token : token}})
+        return res.status(200).send({status : true, message : "Success",data : {userId : check._id, token : token}})
     }else{
         return res.status(400).send( {status : false, message : "enter valid password"})
     }
@@ -150,7 +150,7 @@ let loginUser = async function(req,res){
         if(!getUser)return res.status(404).send({status: false, message: "userdetails not found"})
 
 
-        return res.status(200).send({status:true,message: "User profile details",data:getUser})
+        return res.status(200).send({status:true,message: "Success",data:getUser})
 
     } catch (error) {
         return res.status(500).send({status:false,message:error.message})
@@ -301,7 +301,7 @@ if (address) {
 
     let updateUser = await userModel.findOneAndUpdate({ _id: userId }, result, { new: true })
 
-    return res.status(200).send({ status: true,message:"User profile updated", data: updateUser })
+    return res.status(200).send({ status: true,message:"Success", data: updateUser })
 
 
 

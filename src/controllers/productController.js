@@ -190,7 +190,7 @@ const updateProductsByParams = async function(req,res){
 
         if(Object.keys(obj).length === 0) return res.status(400).send({status : false, message : "please provide some data for updation"})
         let  updateproduct = await productModel.findOneAndUpdate({_id : productId,isDeleted:false},obj,{new:true})
-        return res.status(200).send({status : true, message : "updated succesfully", data : updateproduct})
+        return res.status(200).send({status : true, message : "Success", data : updateproduct})
 
         
 
