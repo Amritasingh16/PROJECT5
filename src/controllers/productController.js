@@ -138,7 +138,7 @@ const updateProductsByParams = async function(req,res){
         let productId = req.params.productId
         let obj  = {}
         let {title,description,price,isFreeShipping,productImage,installments,style,availableSizes} = body
-     
+     //if(!productId) return res.status(400).send({status : false, message : "please enter productId"})
         if(!mongoose.isValidObjectId(productId)) return res.status(400).send({status : false, message : "productId is invalid"})
 
         let checkproduct = await productModel.findOne({_id : productId, isDeleted : false})

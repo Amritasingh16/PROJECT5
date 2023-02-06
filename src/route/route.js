@@ -17,4 +17,11 @@ router.get("/products/:productId",getProductsByParams)
 router.put("/products/:productId",updateProductsByParams)
 router.delete("/products/:productId",deleteProductsByParams)
 
+router.all("/*", function (req, res) {
+    return res
+      .status(400)
+      .send({ status: false, message: "invalid http request" });
+  });
+  
+
 module.exports = router
