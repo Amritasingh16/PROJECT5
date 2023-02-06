@@ -60,6 +60,12 @@ const isValidPrice =function(price) {
   const validPrice= /^(?:0|[1-9]\d*)(?:\.(?!.*000)\d+)?$/
   return validPrice.test(price) }
 
+const isValidQuan = function(quantity){
+  const validQuantity= /^[0-9]*[1-9]+$|^[1-9]+[0-9]*$/
+  return validQuantity.test(quantity)
+}
 
 
-module.exports={isValidName,isValidEmail,isValidNo,isValidPassword,isValidPin,isValid,isValidTitle,isValidPrice,isValidDesc}
+
+
+module.exports={isValidName,isValidEmail,isValidNo,isValidPassword,isValidPin,isValid,isValidTitle,isValidPrice,isValidDesc,isValidQuan}
