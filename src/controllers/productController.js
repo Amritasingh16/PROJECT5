@@ -120,10 +120,10 @@ const getProductsByParams = async function (req, res) {
 
     try {
         let productId = req.params.productId
-        if (!mongoose.isValidObjectId(productId)) return res.status(400).send({ status: false, msg: "productId is invalid" })
+        if (!mongoose.isValidObjectId(productId)) return res.status(400).send({ status: false, message: "productId is invalid" })
         let getproduct = await userModel.findOne({ _id: productId, isDeleted: false })
         if (!getproduct) return res.status(404).send({ status: false, message: "Product not found" })
-        return res.status(200).send({ status: true, data: getproduct })
+        return res.status(200).send({ status: true,message:"Success", data: getproduct })
 
     } catch (error) {
         return res.status(500).send({ status: false, message: error.message })
@@ -189,7 +189,7 @@ const updateProductsByParams = async function(req,res){
             }
 
         if(Object.keys(obj).length === 0) return res.status(400).send({status : false, message : "please provide some data for updation"})
-        let  updateproduct = await productModel.findOneAndUpdate({_id : productId},obj,{new:true})
+        let  updateproduct = await productModel.findOneAndUpdate({_id : productId,isDeleted:false},obj,{new:true})
         return res.status(200).send({status : true, message : "updated succesfully", data : updateproduct})
 
         
