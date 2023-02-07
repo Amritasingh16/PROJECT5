@@ -27,7 +27,7 @@ const isValidNo = function (number) {
 
 const isValidPassword = function (password) {
   var strongRegex = new RegExp(
-    "^(?=.[a-z])(?=.[A-Z])(?=.[0-9])(?=.[!@#$%^&*]).{8,15}$"
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
   );
   /*at least 1 lowercase, at least 1 uppercase, at least 1 numeric character,
     at least one special character, range between 8-12*/
@@ -42,9 +42,10 @@ const isValidPin = function (pincode) {
 
 
 const isValidTitle = function(title){
- // const validTitle= /^[a-z A-Z0-9_]{3,30}$/
-  const regexTitle = /^([0-9]+)[a-zA-Z ]+([0-9]+)?[!@#$%^&*_+=]?/;
-  return regexTitle.test(title)
+ const validTitle= /^[a-z A-Z0-9_]{3,30}$/
+  // const regexTitle = /^([0-9])[a-zA-Z ]+([0-9])?[!@#$%^&*_+=]?/; 
+  // bhavi bhai ne lagaya tha
+  return validTitle.test(title)
 }
 
 

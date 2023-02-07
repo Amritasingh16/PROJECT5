@@ -61,7 +61,7 @@ if(!shipping.city) return res.status(400).send({ status: false, message: "Please
 if(typeof shipping.city != "string") return res.status(400).send({ status: false, message: "City must be in string form." });
 
 if(!shipping.pincode) return res.status(400).send({ status: false, message: "Please enter pincode in shipping." });
-if(typeof shipping.pincode != "number") return res.status(400).send({ status: false, message: "Pincode must be in string form." });
+if(typeof shipping.pincode != "number") return res.status(400).send({ status: false, message: "Pincode must be in Number form." });
 if (!isValidPin(shipping.pincode))return res.status(400).send({ status: false, message: "Shipping Pincode must be in number form." });
 
 
@@ -142,9 +142,10 @@ let loginUser = async function(req,res){
         let userId=req.params.userId
         if(!userId) return res.status(400).send({ status: false, message: "userId is required in params" })
         if (!mongoose.isValidObjectId(userId)) return res.status(400).send({ status: false, message: "userId is invalid" })
-        let verifyToken= req.bearerToken;
+        // bhavi bhai yeh hatana hai authorization nahi lagani
+        // let verifyToken= req.bearerToken;
        
-        if(userId!==verifyToken) return res.status(403).send({status:false,message:"You are not authorised"})
+        // if(userId!==verifyToken) return res.status(403).send({status:false,message:"You are not authorised"})
         
         let getUser=await userModel.findOne({_id:userId})
         if(!getUser)return res.status(404).send({status: false, message: "userdetails not found"})

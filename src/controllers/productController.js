@@ -85,35 +85,85 @@ const createProduct = async function (req, res) {
 
 
 const getProductsByQuery = async function (req, res) {
-    let query = req.query
+    try{
+        let query = req.query
     if (Object.keys(query).length == 0) {
         let allData = await productModel.find({ isDeleted: false })
         return res.status(200).send({ status: true, message: "Success", data: allData })
     }
     else {
         let { size, name, priceGreaterThan, priceLessThan, priceSort } = query
-        //
+       
         let obj = {}
 
         if (size) {
 
+            size = size.toUpperCase()
+            if (!["S", "XS", "M", "X", "L", "XXL", "XL"].includes(size)) return res.status(400).send({ status: false, message: "only accepts S,XS,M,X,L,XXL,XL" })
             obj.availableSizes = [size]
-            console.log(obj.size)
         }
         if (name) {
             //var r= new RegExp(`/.*${name}.*/`)
             //console.log(typeof r)
             //r = r.replace("poi",name)
+
             obj.title = { $regex: name }
-            console.log(obj.title)
+
         }
-        console.log(obj)
-        let findData = await productModel.find(obj)
+        var numberRegex = /^[0-9.]*$/
+        if (priceGreaterThan && priceLessThan) {
+            priceGreaterThan = priceGreaterThan.trim()
+            if(!numberRegex.test(priceGreaterThan)) return res.send({message:"accepts only numbers."})
+            priceLessThan = priceLessThan.trim()
+            if(!numberRegex.test(priceGreaterThan)) return res.send({message:"accepts only numbers"})
+            Number(priceGreaterThan)
+            Number(priceLessThan)
+            obj.price = { $gt: priceGreaterThan, $lt: priceLessThan }
 
-        return res.status(200).send({ status: true, message: "Success", data: findData })
+        }
+
+        if (priceGreaterThan && !priceLessThan) {
+            priceGreaterThan = priceGreaterThan.trim()
+            
+            if(!numberRegex.test(priceGreaterThan)) return res.send({message:"accepts only numbers in priceLessThan"})
+           Number(priceGreaterThan)    
+            obj.price = { $gt: priceGreaterThan }
+     
+        } 
+
+        if (priceLessThan && !priceGreaterThan) {
+            priceLessThan = priceLessThan.trim()
+            if(!numberRegex.test(priceGreaterThan)) return res.send({message:"accepts only numbers in priceGreaterThan"})
+            Number(priceLessThan)
+            obj.price = { $lt: priceLessThan }
+            
+        }
+
+        obj.isDeleted = false
+
+
+
+        //console.log(obj)
+
+
+        if (priceSort) {
+
+            if (priceSort != "1" && priceSort != "-1") return res.status(404).send({ status: false, message: "Can only be 1 or -1 for sorting." })
+            Number(priceSort)
+            var findData = await productModel.find(obj).sort({ price: priceSort })
+        }
+        else {
+            var findData = await productModel.find(obj)
+        }
+
+        if (findData.length == 0) return res.status(404).send({ status: false, message: "Product not found" })
+        return res.status(200).send({ status: true, message: "Success", data: findData })
+
     }
-}
-
+    }catch(err){
+        return res.status(500).send({status : false, error : err.message})
+    }
+    }
 //-------------------------------------------------<>---------------------------------------------------------//
 
 const getProductsByParams = async function (req, res) {
