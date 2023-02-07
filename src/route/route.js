@@ -21,7 +21,7 @@ router.delete("/products/:productId",deleteProductsByParams)
 
 //--------------------CART-----------------------------
 router.post("/users/:userId/cart",authentication,createCartByParams)
-router.put("/users/:userId/cart",authentication,updateProductsByParams)
+router.put("/users/:userId/cart",authentication,updateCartByParams)
 router.get("/users/:userId/cart",authentication,getCartByParams)
 router.delete("/users/:userId/cart",authentication,deleteCartByParams)
 
