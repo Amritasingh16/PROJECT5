@@ -92,10 +92,11 @@ const { isValidPrice, isValidNo, isValidQuan } = require("../validations/validat
                 if (!product || product.isDeleted == true) return res.status(404).send({ status: false, message: "Product not found" })
         
                 if (cartId) {
-                    const findCart = await cartModel.findById(cartId).populate([{ path: 'items.productId' }])
+                    const findCart = await cartModel.findById(cartId).populate( 'items.productId')
+                    
                     if (!findCart) return res.status(404).send({ status: false, message: "Cart not found" })
                     if (findCart.userId.toString() !== userId) return res.status(403).send({ status: false, message: "Unauthorized User" })
-        
+                    
                     let itemsArray = findCart.items
                     let totalPrice = findCart.totalPrice
                     let totalItems = findCart.totalItems
@@ -148,6 +149,8 @@ const { isValidPrice, isValidNo, isValidQuan } = require("../validations/validat
 
 
 const updateCartByParams = async function (req, res) {
+   try{
+
     let data =req.body
     let userId = req.params.userId
 
@@ -229,13 +232,12 @@ const updateCartByParams = async function (req, res) {
         var decrease = await cartModel.findOneAndUpdate({_id:cartId},obj2,{new:true})
         console.log(quantity-1)
         return res.status(200).send({status:true,message:"Success",data:decrease})
-    }
-    
-    
-    
+    }
 
 
-
+   }catch(err){
+    return res.status(500).send({status : false, error : err.message})
+   }
 }
 
 
