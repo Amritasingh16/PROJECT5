@@ -1,4 +1,5 @@
 const productModel = require("../models/productModel")
+const userModel = require("../models/userModel")
 const {uploadFile} = require("../middlewares/aws")
 const {isValidTitle,isValidDesc,isValidPrice} = require("../validations/validation")
 const mongoose = require("mongoose")
@@ -107,7 +108,7 @@ const getProductsByQuery = async function (req, res) {
             //console.log(typeof r)
             //r = r.replace("poi",name)
 
-            obj.title = { $regex: name }
+            obj.title = { $regex: name.trim()}
 
         }
         var numberRegex = /^[0-9.]*$/
@@ -133,7 +134,7 @@ const getProductsByQuery = async function (req, res) {
 
         if (priceLessThan && !priceGreaterThan) {
             priceLessThan = priceLessThan.trim()
-            if(!numberRegex.test(priceGreaterThan)) return res.send({message:"accepts only numbers in priceGreaterThan"})
+            if(!numberRegex.test(priceLessThan)) return res.send({message:"accepts only numbers in priceGreaterThan"})
             Number(priceLessThan)
             obj.price = { $lt: priceLessThan }
             
@@ -171,8 +172,8 @@ const getProductsByParams = async function (req, res) {
     try {
         let productId = req.params.productId
         if (!mongoose.isValidObjectId(productId)) return res.status(400).send({ status: false, message: "productId is invalid" })
-        let getproduct = await userModel.findOne({ _id: productId, isDeleted: false })
-        if (!getproduct) return res.status(404).send({ status: false, message: "Product not found" })
+        let getproduct = await productModel.findOne({ _id: productId, isDeleted: false })
+        if (!getproduct) return res.status(404).send({ status: false, message: "Product not found or might be deleted " })
         return res.status(200).send({ status: true,message:"Success", data: getproduct })
 
     } catch (error) {

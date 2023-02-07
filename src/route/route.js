@@ -6,24 +6,24 @@ const {createCartByParams,updateCartByParams,getCartByParams,deleteCartByParams}
 const {authentication} = require("../middlewares/auth")
 
 //----------------USER------------------------------
-router.post("/register",registerUser)
-router.post("/login",loginUser)
-router.get("/user/:userId/profile",authentication,getUserByParams)
-router.put("/user/:userId/profile",authentication,updateUser)
+router.post("/register",registerUser) //Bhavi bro
+router.post("/login",loginUser) //paras bhai
+router.get("/user/:userId/profile",authentication,getUserByParams) //sourav
+router.put("/user/:userId/profile",authentication,updateUser) //bhusan bhai 
 
 //-----------------PRODUCTS--------------------------
-router.post("/products",createProduct)
-router.get("/products",getProductsByQuery)
-router.get("/products/:productId",getProductsByParams)
-router.put("/products/:productId",updateProductsByParams)
-router.delete("/products/:productId",deleteProductsByParams)
+router.post("/products",createProduct) //amrita brocode
+router.get("/products",getProductsByQuery) //bhavi bhai
+router.get("/products/:productId",getProductsByParams) //sourav 
+router.put("/products/:productId",updateProductsByParams) //bhusan bhai-----bhavi bhai
+router.delete("/products/:productId",deleteProductsByParams) //amrita 
 
 
 //--------------------CART-----------------------------
-router.post("/users/:userId/cart",authentication,createCartByParams)
-router.put("/users/:userId/cart",authentication,updateCartByParams)
-router.get("/users/:userId/cart",authentication,getCartByParams)
-router.delete("/users/:userId/cart",authentication,deleteCartByParams)
+router.post("/users/:userId/cart",authentication,createCartByParams) //amrita brocode
+router.put("/users/:userId/cart",authentication,updateCartByParams) //bhavi bhaii---bhusan bhai
+router.get("/users/:userId/cart",authentication,getCartByParams) //paras bhai
+router.delete("/users/:userId/cart",authentication,deleteCartByParams) // sourav
 
 
 

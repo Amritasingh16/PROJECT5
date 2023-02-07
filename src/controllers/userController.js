@@ -27,24 +27,29 @@ if (!body || Object.keys(body).length == 0)return res.status(400).send({ status:
 
 if(!fname) return res.status(400).send({status:false,message:"Please provide first name in body."})
 if (!isValid(fname)) return res.status(400).send({ status: false, message: "first name is not valid" })
+fname = fname.trim()  
 if(!isValidName(fname)) return res.status(400).send({status:false,message:"FirstName should have only letters and minumum 3 letters."})
 
 if(!lname) return res.status(400).send({status:false,message:"Please provide last name in body."})
 if (!isValid(lname)) return res.status(400).send({ status: false, message: "Please provide Last Name in string form and it cannot be empty." })
+lname = lname.trim()
 if(!isValidName(lname)) return res.status(400).send({status:false,message:"LastName should have only letters and minumum 3 letters."})
 
 if (!email) return res.status(400).send({ status: false, message: "Please enter email in body." })
+email = email.trim()
 if (!isValidEmail(email)) return res.status(400).send({ status: false, message: "Please enter valid email." })
 let emailPresent = await userModel.findOne({email:email})
 if(emailPresent) return res.status(400).send({ status: false, message: "This email already exists." })
  
 if(!phone) return res.status(400).send({ status: false, message: "Please enter phone number in body." })
+phone = phone.trim()
 if (!isValidNo(phone))return res.status(400).send({status: false,message: "Please enter a valid Mobile number.",});
 let phonePresent = await userModel.findOne({phone:phone})
 if(phonePresent) return res.status(400).send({ status: false, message: "This phone number already exists." })
 
 if (!password) return res.status(400).send({ status: false, message: "Please enter password in body." });
 // if(password.length<8 || password.length>15)  return res.status(400).send({ status: false, message: "Password's length must be between 8 & 15." });
+
 if (!isValidPassword(password))return res.status(400).send({status: false,message:"Password must be in the Range of 8 to 15 , it must contain atleast 1 lowercase, 1 uppercase, 1 numeric character and one special character."});
 
 if(!address) return res.status(400).send({ status: false, message: "Please enter address in body." })
@@ -179,12 +184,14 @@ const updateUser = async function (req, res) {
 
 
     if (fname) {
+        fname = fname.trim()
         if (!isValid(fname)) return res.status(400).send({ status: false, message: "first name is not valid" })
         if(!isValidName(fname)) return res.status(400).send({status:false,message:"First Name should have only letters and minumum 3 letters."})
         result.fname = fname
     }
 
     if (lname) {
+        lname = lname.trim()
        if (!isValid(lname)) return res.status(400).send({ status: false, message: "Please provide Last Name in string form and it cannot be empty." })
         if(!isValidName(lname)) return res.status(400).send({status:false,message:"Last Name should have only letters and minumum 3 letters."})
         result.lname = lname
@@ -193,6 +200,7 @@ const updateUser = async function (req, res) {
 
 
     if (email) {
+        email = email.trim()
         if (!isValid(email)) return res.status(400).send({ status: false, message: "Email is  is not valid" })
         if (!isValidEmail(email)) return res.status(400).send({ status: false, message: "Please enter valid email." })
 
@@ -203,6 +211,7 @@ const updateUser = async function (req, res) {
 
 
     if (password) {
+        password = password.trim()
         if (!isValid(password)) return res.status(400).send({ status: false, message: "Please Provide Proper Password" })
         // if(password.length<8 || password.length>15)  return res.status(400).send({ status: false, message: "Password's length must be between 8 & 15." });
     if (!isValidPassword(password))return res.status(400).send({status: false,message:"Password must be in the Range of 8 to 15 , it must contain atleast 1 lowercase, 1 uppercase, 1 numeric character and one special character."});
@@ -212,6 +221,7 @@ const updateUser = async function (req, res) {
     }
 
     if (phone) {
+        phone = phone.trim()
         //if (!isValid(phone)) return res.status(400).send({ status: false, message: "Please Provide Proper Password" })
         if (!isValidNo(phone))return res.status(400).send({status: false,message: "Please enter a valid Mobile number.",});
         let checkPhone = await userModel.findOne({ phone: phone })
