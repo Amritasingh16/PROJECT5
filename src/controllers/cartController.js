@@ -148,7 +148,88 @@ const { isValidPrice, isValidNo, isValidQuan } = require("../validations/validat
 
 
 const updateCartByParams = async function (req, res) {
-
+    let data =req.body
+    let userId = req.params.userId
+    if(!mongoose.isValidObjectId(userId)) return res.status(400).send({status:false,message:"Enter valid user ID"})
+    let userPresent = await userModel.findOne({_id:userId})
+    if(!userPresent) return res.status(404).send({status:false,message:"User not found user ID"})
+    
+    let {cartId,productId,removeProduct} = data
+    
+    if(!mongoose.isValidObjectId(cartId)) return res.status(400).send({status:false,message:"Enter valid cart ID"})
+    let cartPresent = await cartModel.findOne({_id:cartId})
+    if(!cartPresent) return res.status(404).send({status:false,message:"cart not found with this cart ID"})
+    
+    if(!mongoose.isValidObjectId(productId)) return res.status(400).send({status:false,message:"Enter valid product ID"})
+    let productPresent = await productModel.findOne({_id:productId,isDeleted:false})
+    if(!productPresent) return res.status(404).send({status:false,message:"product not found or it is already deleted with this product ID"})
+    
+    let itemsArr = cartPresent.items
+    
+    // for(let i=0;i<itemsArr.length;i++){
+    //     if(productId!=itemsArr[i].productId)
+        
+    // }
+    let itemPresent = itemsArr.map(x=>x.productId.toString())
+    if(!itemPresent.includes(productId)) return res.status(404).send({message:"this product does not exist in cart or already deleted"})
+    
+    
+    if((removeProduct != 0 && removeProduct != 1) || typeof removeProduct!="number") return res.status(400).send({status:false,message:"removeProduct must be 0 or 1."})
+    
+    let obj = {}
+    
+    let quantity = 0
+    productPrice = productPresent.price
+    
+      resultArr = itemsArr.filter(x=>x.productId.toString()!=productId)
+    
+    
+      let obj2={}
+    
+    for(let i=0;i<itemsArr.length;i++){
+     if(itemsArr[i].productId.toString()==productId){
+     quantity = itemsArr[i].quantity
+     //obj2.items[i]["quantity"] = quantity-1
+     //console.log(obj2)
+     }
+    }
+    
+      
+    
+      
+    if(removeProduct==0){
+        obj.items = resultArr
+        obj.totalItems = resultArr.length
+        obj.totalPrice = cartPresent.totalPrice - quantity*productPrice
+        var remove = await cartModel.findOneAndUpdate({_id:cartId},obj,{new:true})
+        return res.status(200).send({status:true,message:"Success",data:remove})
+    
+    
+    }
+    else if(removeProduct==1){
+    let newArr = []
+    for(let i=0;i<itemsArr.length;i++){
+        if(itemsArr[i].productId.toString()==productId){
+            itemsArr[i].quantity -= 1
+            if(itemsArr[i].quantity==0){obj.items = resultArr
+                obj.totalItems = resultArr.length
+                obj.totalPrice = cartPresent.totalPrice - quantity*productPrice
+                var remove = await cartModel.findOneAndUpdate({_id:cartId},obj,{new:true})
+                return res.status(200).send({status:true,message:"Success",data:remove})} 
+            newArr.push(itemsArr[i])
+    
+        }
+        
+    }
+    let newResult = [...newArr,...resultArr ]
+    obj2.items = newResult
+    obj2.totalPrice = cartPresent.totalPrice - (quantity-1)*productPrice
+        var decrease = await cartModel.findOneAndUpdate({_id:cartId},obj2,{new:true})
+        return res.status(200).send({status:true,message:"Success",data:decrease})
+    }
+    
+    
+    
 
 
 
