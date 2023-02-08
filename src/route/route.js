@@ -3,6 +3,7 @@ const router = express.Router()
 const {registerUser,loginUser,getUserByParams,updateUser} = require("../controllers/userController")
 const {createProduct,getProductsByQuery,getProductsByParams,updateProductsByParams,deleteProductsByParams} = require("../controllers/productController")
 const {createCartByParams,updateCartByParams,getCartByParams,deleteCartByParams} = require("../controllers/cartController")
+const {createOrder,updateOrder}= require("../controllers/orderController")
 const {authentication} = require("../middlewares/auth")
 
 //----------------USER------------------------------
@@ -25,6 +26,9 @@ router.put("/users/:userId/cart",authentication,updateCartByParams) //bhavi bhai
 router.get("/users/:userId/cart",authentication,getCartByParams) //paras bhai
 router.delete("/users/:userId/cart",authentication,deleteCartByParams) // sourav
 
+//---------------------------Order-------------------------------
+router.post("/users/:userId/orders",authentication,createOrder)
+router.put("/users/:userId/orders",authentication,updateOrder)
 
 
 
