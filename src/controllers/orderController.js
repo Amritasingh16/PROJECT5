@@ -26,4 +26,4 @@ const updateOrder=async function (req,res){
 
 
 
-module.export={createOrder,updateOrder}
+module.exports={createOrder,updateOrder}

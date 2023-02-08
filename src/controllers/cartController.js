@@ -156,7 +156,11 @@ const updateCartByParams = async function (req, res) {
 
     if(!mongoose.isValidObjectId(userId)) return res.status(400).send({status:false,message:"Enter valid user ID"})
     let userPresent = await userModel.findOne({_id:userId})
-    if(!userPresent) return res.status(404).send({status:false,message:"User not found user ID"})
+    if(!userPresent) return res.status(404).send({status:false,message:"User not found with this user ID"})
+
+    //------------------------Authorization--------------------------
+    if(userId!=req.bearerToken) return res.status(403).send({status:false,message:"You are not authorized"})
+    //---------------------------------------------------------------
     
     let {cartId,productId,removeProduct} = data
     
@@ -179,7 +183,6 @@ const updateCartByParams = async function (req, res) {
     if((removeProduct != 0 && removeProduct != 1) || typeof removeProduct!="number") return res.status(400).send({status:false,message:"removeProduct must be 0 or 1."})
     
     let obj  = {}
-    let obj2 = {}
 
     let quantity = 0
     productPrice = productPresent.price
@@ -192,8 +195,7 @@ const updateCartByParams = async function (req, res) {
     for(let i=0;i<itemsArr.length;i++){
      if(itemsArr[i].productId.toString()==productId){
      quantity = itemsArr[i].quantity
-     //obj2.items[i]["quantity"] = quantity-1
-     //console.log(obj2)
+   
      }
     }
     
@@ -214,26 +216,28 @@ const updateCartByParams = async function (req, res) {
     for(let i=0;i<itemsArr.length;i++){
         if(itemsArr[i].productId.toString()==productId){
             itemsArr[i].quantity -= 1
-            console.log(itemsArr[i].quantity)
-            if(itemsArr[i].quantity==0){obj.items = resultArr
+            if(itemsArr[i].quantity==0)
+            { 
+                obj.items = resultArr
                 obj.totalItems = resultArr.length
                 obj.totalPrice = cartPresent.totalPrice - quantity*productPrice
                 var remove = await cartModel.findOneAndUpdate({_id:cartId},obj,{new:true})
-                return res.status(200).send({status:true,message:"Success",data:remove})} 
+                return res.status(200).send({status:true,message:"Success",data:remove})
+            } 
             newArr.push(itemsArr[i])
     
         }
         
     }
     let newResult = [...newArr,...resultArr ]
-    obj2.items = newResult
-    obj2.totalPrice = cartPresent.totalPrice - productPrice
+    obj.items = newResult
+    obj.totalPrice = cartPresent.totalPrice - productPrice
     
-        var decrease = await cartModel.findOneAndUpdate({_id:cartId},obj2,{new:true})
+        var decrease = await cartModel.findOneAndUpdate({_id:cartId},obj,{new:true})
+        console.log(quantity-1)
         return res.status(200).send({status:true,message:"Success",data:decrease})
     }
-
-
+    
    }catch(err){
     return res.status(500).send({status : false, error : err.message})
    }
