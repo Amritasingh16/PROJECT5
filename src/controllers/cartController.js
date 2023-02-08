@@ -144,7 +144,7 @@ const { isValidPrice, isValidNo, isValidQuan } = require("../validations/validat
         return res.status(500).send({ status: false, message: error.message })
     }
 }
-// }
+
 
 
 
@@ -233,8 +233,7 @@ const updateCartByParams = async function (req, res) {
     obj.items = newResult
     obj.totalPrice = cartPresent.totalPrice - productPrice
     
-        var decrease = await cartModel.findOneAndUpdate({_id:cartId},obj,{new:true})
-        console.log(quantity-1)
+        var decrease = await cartModel.findOneAndUpdate({_id:cartId},obj2,{new:true})
         return res.status(200).send({status:true,message:"Success",data:decrease})
     }
     
