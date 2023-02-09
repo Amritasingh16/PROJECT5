@@ -174,7 +174,7 @@ const updateCartByParams = async function (req, res) {
             obj.items = newResult
             obj.totalPrice = cartPresent.totalPrice - productPrice
 
-            var decrease = await cartModel.findOneAndUpdate({ _id: cartId }, obj2, { new: true })
+            var decrease = await cartModel.findOneAndUpdate({ _id: cartId }, obj, { new: true })
             return res.status(200).send({ status: true, message: "Success", data: decrease })
         }
 
