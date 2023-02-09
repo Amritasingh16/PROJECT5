@@ -13,8 +13,6 @@ const createProduct = async function (req, res) {
  
         if(Object.keys(data).length==0) return res.status(400).send({ status: false, message: "Please provide some data in body" })
 
-       // INCORRECT FORMAT
-
         let { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments } = data
 
         if (!title) return res.status(400).send({ status: false, message: "Title is mandatory" })

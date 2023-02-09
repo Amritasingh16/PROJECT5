@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken")
 const mongoose = require("mongoose")
 const userModel = require("../models/userModel")
 const productModel = require("../models/productModel")
-const {isValid} = require("../validations/validation")
 
 const createOrder = async function (req, res) {
     try{
