@@ -79,6 +79,8 @@ if(!getOrder) return res.status(400).send({ status: false, message: "order does 
 let findCart = await cartModel.findOne({ userId: userId })
 if (!findCart) return res.status(404).send({ status: false, message: "cart does not exist with this userId" })
 
+
+
 if(getOrder.status=="cancelled") return res.status(400).send({status:false,message:"Order already cancelled"})
 if(getOrder.status=="completed") return res.status(400).send({status:false,message:"Order already completed"})
 
@@ -88,8 +90,13 @@ if(status==="cancelled"){
    }
 
 if(getOrder.status=="pending"){
+    if(status=="completed"||status=="cancelled"){
     let update = await orderModel.findOneAndUpdate({_id:orderId},{status:status},{new:true})
     return res.status(200).send({status:true,message:"Success",data:update})
+    }
+    else return res.status(400).send({status:false,message:"Status can either be cancelled or completed"})
+    
+    
 }
 
 } catch (error) {
