@@ -7,27 +7,27 @@ const {createOrder,updateOrder}= require("../controllers/orderController")
 const {authentication} = require("../middlewares/auth")
 
 //----------------USER------------------------------
-router.post("/register",registerUser) //Bhavi bro
-router.post("/login",loginUser) //paras bhai
+router.post("/register",registerUser) //Bhavi 
+router.post("/login",loginUser) //paras 
 router.get("/user/:userId/profile",authentication,getUserByParams) //sourav
-router.put("/user/:userId/profile",authentication,updateUser) //bhusan bhai 
+router.put("/user/:userId/profile",authentication,updateUser) //bhusan 
 
 //-----------------PRODUCTS--------------------------
-router.post("/products",createProduct) //amrita brocode
-router.get("/products",getProductsByQuery) //bhavi bhai
+router.post("/products",createProduct) //amrita 
+router.get("/products",getProductsByQuery) //bhavi 
 router.get("/products/:productId",getProductsByParams) //sourav 
-router.put("/products/:productId",updateProductsByParams) //bhusan bhai-----bhavi bhai
+router.put("/products/:productId",updateProductsByParams) //bhusan -----bhavi 
 router.delete("/products/:productId",deleteProductsByParams) //amrita 
 
 
 //--------------------CART-----------------------------
-router.post("/users/:userId/cart",authentication,createCartByParams) //amrita brocode
-router.put("/users/:userId/cart",authentication,updateCartByParams) //bhavi bhaii---bhusan bhai
-router.get("/users/:userId/cart",authentication,getCartByParams) //paras bhai
+router.post("/users/:userId/cart",authentication,createCartByParams) //amrita 
+router.put("/users/:userId/cart",authentication,updateCartByParams) //bhavi ---bhusan 
+router.get("/users/:userId/cart",authentication,getCartByParams) //paras 
 router.delete("/users/:userId/cart",authentication,deleteCartByParams) // sourav
 
 //---------------------------Order-------------------------------
-router.post("/users/:userId/orders",authentication,createOrder)
+router.post("/users/:userId/orders",authentication,createOrder) 
 router.put("/users/:userId/orders",authentication,updateOrder)
 
 
