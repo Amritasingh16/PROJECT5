@@ -195,7 +195,7 @@ const getCartByParams = async function (req, res) {
         if (!mongoose.isValidObjectId(userId)) return res.status(400).send({ status: false, message: "invalid userid in params" })
 
         // checking userid is matched with jwt payload user id 
-        if (!userId === jwtId) return res.status(401).send({ status: false, message: "user is not authorized" })
+        if (userId !== jwtId) return res.status(401).send({ status: false, message: "user is not authorized" })
 
         // checking if user exist or not
         let user = await userModel.findOne({ _id: userId })
