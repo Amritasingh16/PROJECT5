@@ -1,6 +1,5 @@
 const orderModel = require("../models/orderModel")
 const cartModel = require("../models/cartModel")
-const jwt = require("jsonwebtoken")
 const mongoose = require("mongoose")
 const userModel = require("../models/userModel")
 
@@ -59,7 +58,8 @@ if(isCancel||isCancel==''){
 
 const updateOrder = async function (req, res) {
 
-let userId = req.params.userId
+try {
+    let userId = req.params.userId
 let {orderId,status} = req.body
 
 if(!(req.body)) return res.status(400).send({ status: false, message: "Please provide some data in body" })
@@ -87,6 +87,11 @@ if(getOrder.status=="pending"){
     let update = await orderModel.findOneAndUpdate({_id:orderId},{status:status},{new:true})
     return res.status(200).send({status:true,message:"Success",data:update})
 }
+
+} catch (error) {
+    return res.status(500).send({status : false, error : err.message})
+}
+
 }
 
 
