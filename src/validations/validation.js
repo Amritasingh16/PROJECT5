@@ -43,9 +43,7 @@ const isValidPin = function (pincode) {
 
 const isValidTitle = function(title){
  const validTitle= /^[a-z A-Z0-9_]{3,30}$/
-  // const regexTitle = /^([0-9])[a-zA-Z ]+([0-9])?[!@#$%^&*_+=]?/; 
-  // bhavi bhai ne lagaya tha
-  return validTitle.test(title)
+ return validTitle.test(title)
 }
 
 

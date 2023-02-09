@@ -5,25 +5,19 @@ var bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 const { isValidName,isValidEmail,isValidNo,isValidPassword,isValidPin,isValid } = require("../validations/validation");
 
-  
+//========================================================<CREATE USER>========================================//
+
 const registerUser = async function(req,res){
     try{
     let body = req.body
     let files= req.files
     if(body.address){
-       // if(typeof body.address != "object") return res.status(400).send({ status: false, message: "The Address must be in object form." });
-
+       
     body.address = JSON.parse(body.address)
     }
     let {fname,lname,email,profileImage,phone,password,address} = body
 
 if (!body || Object.keys(body).length == 0)return res.status(400).send({ status: false, message: "Enter data in body." })
-// let a=["fname","lname","email","profileImage","phone","password","address"]
-// keys=Object.keys(body)
-// for(let i=0;i<a.length;i++){
-// if(!keys.includes(i))
-// return res.send({msg:"'${i}'is mandatory"})
-// }
 
 if(!fname) return res.status(400).send({status:false,message:"Please provide first name in body."})
 if (!isValid(fname)) return res.status(400).send({ status: false, message: "first name is not valid" })
@@ -48,7 +42,6 @@ let phonePresent = await userModel.findOne({phone:phone})
 if(phonePresent) return res.status(400).send({ status: false, message: "This phone number already exists." })
 
 if (!password) return res.status(400).send({ status: false, message: "Please enter password in body." });
-// if(password.length<8 || password.length>15)  return res.status(400).send({ status: false, message: "Password's length must be between 8 & 15." });
 
 if (!isValidPassword(password))return res.status(400).send({status: false,message:"Password must be in the Range of 8 to 15 , it must contain atleast 1 lowercase, 1 uppercase, 1 numeric character and one special character."});
 
@@ -109,10 +102,7 @@ catch(err){
 }
 }
 
-
-
-
-
+//==========================================================<USER LOGIN>==================================================//
 
 let loginUser = async function(req,res){
     try{
@@ -140,17 +130,13 @@ let loginUser = async function(req,res){
 
 }
 
-
+//================================================<GET USER>========================================================//
 
     const getUserByParams = async function(req,res){
     try {
         let userId=req.params.userId
         if(!userId) return res.status(400).send({ status: false, message: "userId is required in params" })
         if (!mongoose.isValidObjectId(userId)) return res.status(400).send({ status: false, message: "userId is invalid" })
-        // bhavi bhai yeh hatana hai authorization nahi lagani
-        // let verifyToken= req.bearerToken;
-       
-        // if(userId!==verifyToken) return res.status(403).send({status:false,message:"You are not authorised"})
         
         let getUser=await userModel.findOne({_id:userId})
         if(!getUser)return res.status(404).send({status: false, message: "userdetails not found"})
@@ -163,11 +149,12 @@ let loginUser = async function(req,res){
     }
 }
 
+//===================================================<UPDATE USER>=======================================================//
 
 const updateUser = async function (req, res) {
     let data = req.body
     let userId = req.params.userId
-
+try{
     
  let {fname,lname,email,phone,password,profileImage} = data
     let result = {}
@@ -222,7 +209,7 @@ const updateUser = async function (req, res) {
 
     if (phone) {
         phone = phone.trim()
-        //if (!isValid(phone)) return res.status(400).send({ status: false, message: "Please Provide Proper Password" })
+        
         if (!isValidNo(phone))return res.status(400).send({status: false,message: "Please enter a valid Mobile number.",});
         let checkPhone = await userModel.findOne({ phone: phone })
         if (checkPhone) return res.status(400).send({ status: false, message: " mobile number already exist please provide another phone number" })
@@ -245,7 +232,7 @@ if(data.address){
 let {address} = data
  
 
-//shipping add
+//================================================"shipping add"==============================================//
 if (address) {
     if (address.shipping) {
     if (address.shipping.street) {
@@ -274,7 +261,7 @@ if (address) {
     }
 }
 
-// for billing address
+//======================================"for billing address"======================================//
 
 if (address) {
     if (address.billing) {
@@ -313,9 +300,9 @@ if (address) {
     let updateUser = await userModel.findOneAndUpdate({ _id: userId }, result, { new: true })
 
     return res.status(200).send({ status: true,message:"Success", data: updateUser })
-
-
-
+}catch(error){
+    return res.status(500).send({status:false, message: error.message})
+}
 }
 
 
