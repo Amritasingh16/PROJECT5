@@ -3,7 +3,7 @@ const cartModel = require("../models/cartModel")
 const jwt = require("jsonwebtoken")
 const mongoose = require("mongoose")
 const userModel = require("../models/userModel")
-const productModel = require("../models/productModel")
+
 
 const createOrder = async function (req, res) {
     try{
