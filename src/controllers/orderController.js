@@ -52,7 +52,7 @@ if(isCancel||isCancel==''){
 
     let { _id, userId, items, totalPrice, totalItems, totalQuantity, cancellable, status, createdAt, updatedAt } = createData
 
-    return res.status(201).send({ status: true, message: "Success", data: { _id, userId, items, totalPrice, totalItems, totalQuantity, cancellable, status, createdAt, updatedAt } })
+    return res.status(200).send({ status: true, message: "Success", data: { _id, userId, items, totalPrice, totalItems, totalQuantity, cancellable, status, createdAt, updatedAt } })
     }catch(err){
         return res.status(500).send({status : false, error : err.message})
     }
