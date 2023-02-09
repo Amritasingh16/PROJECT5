@@ -27,7 +27,7 @@ const isValidNo = function (number) {
 
 const isValidPassword = function (password) {
   var strongRegex = new RegExp(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/
   );
   /*at least 1 lowercase, at least 1 uppercase, at least 1 numeric character,
     at least one special character, range between 8-12*/

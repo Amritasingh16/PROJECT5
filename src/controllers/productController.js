@@ -13,7 +13,7 @@ const createProduct = async function (req, res) {
 
         if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "Please provide some data in body" })
 
-        let { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments } = data
+        var { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments } = data
 
         if (!title) return res.status(400).send({ status: false, message: "Title is mandatory" })
         title = title.trim()
@@ -73,7 +73,9 @@ const createProduct = async function (req, res) {
         }
 
         let create = await productModel.create(data)
-        return res.status(201).send({ status: true, message: "Success", data: create })
+        
+        var {_id,title,description,price,currencyId,currencyFormat,isFreeShipping,productImage,style,availableSizes,installments,deletedAt,isDeleted,createdAt,updatedAt} = create
+        return res.status(201).send({ status: true, message: "Success", data: {_id,title,description,price,currencyId,currencyFormat,isFreeShipping,productImage,style,availableSizes,installments,deletedAt,isDeleted,createdAt,updatedAt} })
 
     } catch (err) {
         res.status(500).send({ status: false, message: err.message })
@@ -179,7 +181,7 @@ const updateProductsByParams = async function (req, res) {
         let body = req.body
         let productId = req.params.productId
         let obj = {}
-        let { title, description, price, isFreeShipping, productImage, installments, style, availableSizes } = body
+        let { title, description, price, isFreeShipping, productImage, installments, style, availableSizes, isDeleted } = body
 
         if (!mongoose.isValidObjectId(productId)) return res.status(400).send({ status: false, message: "productId is invalid" })
 
@@ -215,13 +217,16 @@ const updateProductsByParams = async function (req, res) {
             obj.style = style
         }
         if (availableSizes) {
-
+            //provide available sizes like this => S,XS,M,X,XL,XXL,XL
             obj.availableSizes = checkproduct.availableSizes
             if (!["S", "XS", "M", "X", "L", "XXL", "XL"].includes(availableSizes)) return res.status(400).send({ status: false, message: "only accepts S,XS,M,X,L,XXL,XL" })
             if (obj.availableSizes.includes(availableSizes)) return res.status(400).send({ status: false, message: "Size already exists" })
             obj.availableSizes.push(availableSizes)
         }
-
+        if(isDeleted === "true"){
+            obj.isDeleted = isDeleted
+            obj.deletedAt = Date.now()
+        }
         let files = req.files
         if (files && files.length > 0) {
             let uploadedFileURL = await uploadFile(files[0])
