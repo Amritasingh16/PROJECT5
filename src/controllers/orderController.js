@@ -5,6 +5,8 @@ const mongoose = require("mongoose")
 const userModel = require("../models/userModel")
 const productModel = require("../models/productModel")
 
+//==================================={{{{{{{{CREATE ORDER}}}}}}}}=====================================
+
 const createOrder = async function (req, res) {
     try{
     let usersId = req.params.userId
@@ -56,6 +58,8 @@ if(isCancel||isCancel==''){
         return res.status(500).send({status : false, error : err.message})
     }
 }
+
+//==========================================={{{{{UPDATE ORDER}}}}}==================================
 
 const updateOrder = async function (req, res) {
 
