@@ -65,7 +65,7 @@ const createProduct = async function (req, res) {
         if (files && files.length > 0) {
             if (files.length > 1) return res.status(400).send({ status: false, message: "You can't enter more than one file to Create" })
             let uploadedFileURL = await uploadFile(files[0])
-            data.productImage = uploadedFileURL
+            data.productImage = uploadedFileURL 
 
         }
         else {
@@ -74,7 +74,7 @@ const createProduct = async function (req, res) {
 
         let create = await productModel.create(data)
         
-        var {_id,title,description,price,currencyId,currencyFormat,isFreeShipping,productImage,style,availableSizes,installments,deletedAt,isDeleted,createdAt,updatedAt} = create
+        let {_id,title,description,price,currencyId,currencyFormat,isFreeShipping,productImage,style,availableSizes,installments,deletedAt,isDeleted,createdAt,updatedAt} = create 
         return res.status(201).send({ status: true, message: "Success", data: {_id,title,description,price,currencyId,currencyFormat,isFreeShipping,productImage,style,availableSizes,installments,deletedAt,isDeleted,createdAt,updatedAt} })
 
     } catch (err) {

@@ -1,3 +1,5 @@
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%(E-Commerce Site)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 const express = require('express')
 const router = express.Router()
 const {registerUser,loginUser,getUserByParams,updateUser} = require("../controllers/userController")
@@ -7,24 +9,24 @@ const {createOrder,updateOrder}= require("../controllers/orderController")
 const {authentication} = require("../middlewares/auth")
 
 //----------------USER------------------------------
-router.post("/register",registerUser) //Bhavi 
-router.post("/login",loginUser) //paras 
-router.get("/user/:userId/profile",authentication,getUserByParams) //sourav
-router.put("/user/:userId/profile",authentication,updateUser) //bhusan 
+router.post("/register",registerUser) 
+router.post("/login",loginUser)  
+router.get("/user/:userId/profile",authentication,getUserByParams) 
+router.put("/user/:userId/profile",authentication,updateUser)  
 
 //-----------------PRODUCTS--------------------------
-router.post("/products",createProduct) //amrita 
-router.get("/products",getProductsByQuery) //bhavi 
-router.get("/products/:productId",getProductsByParams) //sourav 
-router.put("/products/:productId",updateProductsByParams) //bhusan -----bhavi 
-router.delete("/products/:productId",deleteProductsByParams) //amrita 
+router.post("/products",createProduct) 
+router.get("/products",getProductsByQuery) 
+router.get("/products/:productId",getProductsByParams)  
+router.put("/products/:productId",updateProductsByParams)  
+router.delete("/products/:productId",deleteProductsByParams) 
 
 
 //--------------------CART-----------------------------
-router.post("/users/:userId/cart",authentication,createCartByParams) //amrita 
-router.put("/users/:userId/cart",authentication,updateCartByParams) //bhavi ---bhusan 
-router.get("/users/:userId/cart",authentication,getCartByParams) //paras 
-router.delete("/users/:userId/cart",authentication,deleteCartByParams) // sourav
+router.post("/users/:userId/cart",authentication,createCartByParams)
+router.put("/users/:userId/cart",authentication,updateCartByParams)  
+router.get("/users/:userId/cart",authentication,getCartByParams) 
+router.delete("/users/:userId/cart",authentication,deleteCartByParams) 
 
 //---------------------------Order-------------------------------
 router.post("/users/:userId/orders",authentication,createOrder) 
